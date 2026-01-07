@@ -9,7 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class OrderPage {
-
+    // pull request change
     private final WebDriver driver;
 
     // Локаторы для формы заказа

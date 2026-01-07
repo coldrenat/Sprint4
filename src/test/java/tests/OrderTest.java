@@ -20,7 +20,7 @@ public class OrderTest extends BaseTest {
     private final String rentalPeriod;
     private final String color;
     private final String comment;
-
+    // pull request change
     public OrderTest(String orderButtonType, String name, String lastName, String address,
                      String metroStation, String phone, String deliveryDate,
                      String rentalPeriod, String color, String comment) {

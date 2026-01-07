@@ -6,7 +6,7 @@ import pages.MainPage;
 import static org.junit.Assert.assertTrue;
 
 public class LogoTest extends BaseTest {
-
+    // pull request change
     @Test
     public void testScooterLogoReturnsToMainPage() {
         MainPage mainPage = new MainPage(driver);
