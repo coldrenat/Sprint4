@@ -13,7 +13,7 @@ import java.util.List;
 public class MainPage {
 
     private final WebDriver driver;
-
+// pull request change
     // Локаторы для главной страницы
 
     // Кнопка "Заказать" вверху страницы
