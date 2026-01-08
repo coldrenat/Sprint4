@@ -3,7 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
-
+// изменения для PR
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -12,7 +12,7 @@ target/
 *.iws
 *.iml
 *.ipr
-
+// изменения для PR
 ### Eclipse ###
 .apt_generated
 .classpath
@@ -21,7 +21,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+// изменения для PR
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -31,7 +31,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+// изменения для PR
 ### VS Code ###
 .vscode/
 

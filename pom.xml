@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <!-- изменения для PR -->
     <groupId>com.example</groupId>
     <artifactId>scooter-autotests</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <!-- изменения для PR -->
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -17,7 +17,7 @@
         <junit.version>4.13.2</junit.version>
         <webdrivermanager.version>5.6.2</webdrivermanager.version>
     </properties>
-
+    <!-- изменения для PR -->
     <dependencies>
         <!-- Selenium Java -->
         <dependency>
@@ -25,7 +25,7 @@
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
-
+        <!-- изменения для PR -->
         <!-- JUnit 4 -->
         <dependency>
             <groupId>junit</groupId>
@@ -33,7 +33,7 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <!-- изменения для PR -->
         <!-- WebDriver Manager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
@@ -41,7 +41,7 @@
             <version>${webdrivermanager.version}</version>
         </dependency>
     </dependencies>
-
+    <!-- изменения для PR -->
     <build>
         <plugins>
             <!-- Компилятор для Java 11 -->
@@ -54,7 +54,7 @@
                     <target>11</target>
                 </configuration>
             </plugin>
-
+            <!-- изменения для PR -->
             <!-- Плагин для запуска тестов -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

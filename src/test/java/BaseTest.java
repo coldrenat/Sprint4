@@ -1,5 +1,5 @@
 package tests;
-
+// изменения для PR
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
@@ -7,10 +7,10 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.time.Duration;
-
+// изменения для PR
 public class BaseTest {
     protected WebDriver driver;
-
+    // изменения для PR
     @Before
     public void setUp() {
         WebDriverManager.chromedriver().setup();
@@ -25,7 +25,7 @@ public class BaseTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("https://qa-scooter.praktikum-services.ru/");
     }
-
+    // изменения для PR
     @After
     public void tearDown() {
         if (driver != null) {
