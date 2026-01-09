@@ -46,27 +46,27 @@ public class OrderTest extends BaseTest {
     public static Object[][] getTestData() {
         return new Object[][] {
                 {
-                        "Заказ через верхнюю кнопку - Иван Иванов",
+                        "Заказ через верхнюю кнопку",
                         "top",
                         "Иван",
                         "Иванов",
                         "ул. Ленина, д. 1",
                         "Сокольники",
                         "+79991234567",
-                        1,      // завтра
+                        1,
                         "сутки",
                         "black",
                         "Позвонить за час"
                 },
                 {
-                        "Заказ через нижнюю кнопку - Мария Петрова",
+                        "Заказ через нижнюю кнопку",
                         "bottom",
                         "Мария",
                         "Петрова",
                         "пр. Мира, д. 10",
                         "Черкизовская",
                         "+79998765432",
-                        3,      // через 3 дня
+                        3,
                         "двое суток",
                         "grey",
                         "Оставить у двери"
@@ -76,38 +76,65 @@ public class OrderTest extends BaseTest {
 
     @Test
     public void testOrderScooter() {
+        System.out.println("Начало теста: " + testCaseName);
+
         MainPage mainPage = new MainPage(driver);
         mainPage.acceptCookies();
 
         // Выбираем кнопку для начала заказа
         if ("top".equals(orderButtonType)) {
+            System.out.println("Кликаем на верхнюю кнопку заказа");
             mainPage.clickOrderButtonTop();
         } else {
+            System.out.println("Кликаем на нижнюю кнопку заказа");
             mainPage.clickOrderButtonBottom();
         }
 
         OrderPage orderPage = new OrderPage(driver);
 
-        // Заполняем первую часть формы
+        System.out.println("Заполняем имя: " + name);
         orderPage.setName(name);
+
+        System.out.println("Заполняем фамилию: " + lastName);
         orderPage.setLastName(lastName);
+
+        System.out.println("Заполняем адрес: " + address);
         orderPage.setAddress(address);
+
+        System.out.println("Выбираем станцию метро: " + metroStation);
         orderPage.setMetroStation(metroStation);
+
+        System.out.println("Заполняем телефон: " + phone);
         orderPage.setPhone(phone);
+
+        System.out.println("Нажимаем кнопку 'Далее'");
         orderPage.clickNextButton();
 
-        // Заполняем вторую часть формы
+        System.out.println("Устанавливаем дату доставки: " + deliveryDate);
         orderPage.setDeliveryDate(deliveryDate);
+
+        System.out.println("Выбираем срок аренды: " + rentalPeriod);
         orderPage.setRentalPeriod(rentalPeriod);
+
+        System.out.println("Выбираем цвет: " + color);
         orderPage.selectColor(color);
+
+        System.out.println("Добавляем комментарий: " + comment);
         orderPage.setComment(comment);
+
+        System.out.println("Нажимаем кнопку 'Заказать'");
         orderPage.clickOrderButton();
 
-        // Подтверждаем заказ
+        System.out.println("Подтверждаем заказ");
         orderPage.clickConfirmYesButton();
 
         // Проверяем успешное оформление
+        boolean isSuccess = orderPage.isSuccessModalDisplayed();
+        System.out.println("Модальное окно об успехе отображено: " + isSuccess);
+
         assertTrue(testCaseName + ": должно отображаться модальное окно об успешном заказе",
-                orderPage.isSuccessModalDisplayed());
+                isSuccess);
+
+        System.out.println("Тест завершен успешно: " + testCaseName);
     }
 }
