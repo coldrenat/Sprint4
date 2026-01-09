@@ -17,7 +17,7 @@ public class FAQTest extends BaseTest {
         this.expectedAnswerContains = expectedAnswerContains;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "FAQ #{0}: проверка ответа содержит \"{1}\"")
     public static Object[][] getTestData() {
         return new Object[][] {
                 {0, "Сутки — 400 рублей"},
@@ -36,16 +36,17 @@ public class FAQTest extends BaseTest {
         MainPage mainPage = new MainPage(driver);
         mainPage.acceptCookies();
 
-        // Прокручиваем до FAQ
+        // Кликаем на вопрос
         mainPage.clickFaqQuestion(questionIndex);
 
-        // Проверяем, что ответ отображается и содержит ожидаемый текст
-        assertTrue("Ответ на вопрос " + questionIndex + " должен отображаться",
+        // Проверяем, что ответ отображается
+        assertTrue("Ответ на вопрос #" + questionIndex + " должен отображаться",
                 mainPage.isFaqAnswerDisplayed(questionIndex));
 
+        // Проверяем, что ответ содержит ожидаемый текст
         String answerText = mainPage.getFaqAnswerText(questionIndex);
-        assertTrue("Ответ должен содержать текст: " + expectedAnswerContains +
-                        ", но содержит: " + answerText,
+        assertTrue("Ответ должен содержать текст: '" + expectedAnswerContains +
+                        "', но содержит: " + answerText,
                 answerText.contains(expectedAnswerContains));
     }
 }
