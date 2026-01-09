@@ -5,12 +5,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import pages.MainPage;
 import pages.OrderPage;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class OrderTest extends BaseTest {
 
-    private final String orderButtonType; // "top" или "bottom"
+    private final String testCaseName;
+    private final String orderButtonType;
     private final String name;
     private final String lastName;
     private final String address;
@@ -20,50 +23,53 @@ public class OrderTest extends BaseTest {
     private final String rentalPeriod;
     private final String color;
     private final String comment;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    public OrderTest(String orderButtonType, String name, String lastName, String address,
-                     String metroStation, String phone, String deliveryDate,
-                     String rentalPeriod, String color, String comment) {
+    public OrderTest(String testCaseName, String orderButtonType, String name, String lastName,
+                     String address, String metroStation, String phone,
+                     int daysToAdd, String rentalPeriod,
+                     String color, String comment) {
+        this.testCaseName = testCaseName;
         this.orderButtonType = orderButtonType;
         this.name = name;
         this.lastName = lastName;
         this.address = address;
         this.metroStation = metroStation;
         this.phone = phone;
-        this.deliveryDate = deliveryDate;
+        this.deliveryDate = LocalDate.now().plusDays(daysToAdd).format(dateFormatter);
         this.rentalPeriod = rentalPeriod;
         this.color = color;
         this.comment = comment;
     }
 
-    @Parameterized.Parameters(name = "Заказ через кнопку {0}, клиент: {1} {2}")
+    @Parameterized.Parameters(name = "{0}")
     public static Object[][] getTestData() {
         return new Object[][] {
-                // Первый набор данных
                 {
-                        "top",          // кнопка вверху
-                        "Иван",         // имя
-                        "Иванов",       // фамилия
-                        "ул. Ленина, д. 1", // адрес
-                        "Сокольники",   // станция метро
-                        "+79991234567", // телефон
-                        "01.12.2024",   // дата доставки
-                        "сутки",        // срок аренды
-                        "black",        // цвет
-                        "Позвонить за час" // комментарий
+                        "Заказ через верхнюю кнопку - Иван Иванов",
+                        "top",
+                        "Иван",
+                        "Иванов",
+                        "ул. Ленина, д. 1",
+                        "Сокольники",
+                        "+79991234567",
+                        1,      // завтра
+                        "сутки",
+                        "black",
+                        "Позвонить за час"
                 },
-                // Второй набор данных
                 {
-                        "bottom",       // кнопка внизу
-                        "Мария",        // имя
-                        "Петрова",      // фамилия
-                        "пр. Мира, д. 10", // адрес
-                        "Черкизовская", // станция метро
-                        "+79998765432", // телефон
-                        "05.12.2024",   // дата доставки
-                        "двое суток",   // срок аренды
-                        "grey",         // цвет
-                        "Оставить у двери" // комментарий
+                        "Заказ через нижнюю кнопку - Мария Петрова",
+                        "bottom",
+                        "Мария",
+                        "Петрова",
+                        "пр. Мира, д. 10",
+                        "Черкизовская",
+                        "+79998765432",
+                        3,      // через 3 дня
+                        "двое суток",
+                        "grey",
+                        "Оставить у двери"
                 }
         };
     }
@@ -73,27 +79,35 @@ public class OrderTest extends BaseTest {
         MainPage mainPage = new MainPage(driver);
         mainPage.acceptCookies();
 
-        // Нажимаем на кнопку "Заказать" в зависимости от параметра
+        // Выбираем кнопку для начала заказа
         if ("top".equals(orderButtonType)) {
             mainPage.clickOrderButtonTop();
         } else {
-            // Прокручиваем до нижней кнопки
             mainPage.clickOrderButtonBottom();
         }
 
         OrderPage orderPage = new OrderPage(driver);
 
         // Заполняем первую часть формы
-        orderPage.fillFirstPartOfForm(name, lastName, address, metroStation, phone);
+        orderPage.setName(name);
+        orderPage.setLastName(lastName);
+        orderPage.setAddress(address);
+        orderPage.setMetroStation(metroStation);
+        orderPage.setPhone(phone);
+        orderPage.clickNextButton();
 
         // Заполняем вторую часть формы
-        orderPage.fillSecondPartOfForm(deliveryDate, rentalPeriod, color, comment);
+        orderPage.setDeliveryDate(deliveryDate);
+        orderPage.setRentalPeriod(rentalPeriod);
+        orderPage.selectColor(color);
+        orderPage.setComment(comment);
+        orderPage.clickOrderButton();
 
         // Подтверждаем заказ
         orderPage.clickConfirmYesButton();
 
-        // Проверяем, что появилось модальное окно об успешном заказе
-        assertTrue("Должно отображаться модальное окно об успешном заказе",
+        // Проверяем успешное оформление
+        assertTrue(testCaseName + ": должно отображаться модальное окно об успешном заказе",
                 orderPage.isSuccessModalDisplayed());
     }
 }
