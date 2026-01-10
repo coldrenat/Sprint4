@@ -54,7 +54,7 @@
                     <target>11</target>
                 </configuration>
             </plugin>
-            //
+
             <!-- Плагин для запуска тестов -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

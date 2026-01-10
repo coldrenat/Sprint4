@@ -134,7 +134,7 @@ public class OrderTest extends BaseTest {
 
         assertTrue(testCaseName + ": должно отображаться модальное окно об успешном заказе",
                 isSuccess);
-//
+
         System.out.println("Тест завершен успешно: " + testCaseName);
     }
 }
