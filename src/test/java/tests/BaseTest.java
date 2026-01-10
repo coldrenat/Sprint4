@@ -14,7 +14,7 @@ public class BaseTest {
     @Before
     public void setUp() {
         WebDriverManager.chromedriver().setup();
-
+//
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");

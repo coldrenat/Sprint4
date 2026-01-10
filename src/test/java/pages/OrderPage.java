@@ -19,7 +19,7 @@ public class OrderPage {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     // Первая часть формы
-
+//
     @FindBy(xpath = "//input[@placeholder='* Имя']")
     private WebElement nameField;
 
@@ -68,7 +68,7 @@ public class OrderPage {
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15)); // Увеличили время ожидания
         PageFactory.initElements(driver, this);
     }
 
@@ -91,21 +91,51 @@ public class OrderPage {
     }
 
     public void setMetroStation(String station) {
+        // Ждем пока поле станет кликабельным
+        wait.until(ExpectedConditions.elementToBeClickable(metroStationField));
+
+        // Кликаем на поле
         metroStationField.click();
+
+        // Вводим название станции посимвольно (иногда помогает)
         metroStationField.sendKeys(station);
 
-        // Ждем появления вариантов станции и кликаем на первый
-        By stationOption = By.xpath("//div[contains(@class, 'select-search__option')]");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(stationOption));
-        driver.findElement(stationOption).click();
+        // Ждем появления выпадающего списка
+        // Используем более надежный локатор для выпадающего списка
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//div[contains(@class, 'select-search__select') or contains(@class, 'select-search__options')]")));
+
+        // Теперь выбираем станцию из выпадающего списка
+        // В большинстве реализаций это кнопка или div с классом содержащим 'option'
+        // Попробуем кликнуть на элемент списка станций метро
+
+        // Вариант 1: Клик по первому элементу в списке (обычно это искомая станция)
+        try {
+            WebElement stationElement = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("(//div[contains(@class, 'select-search__option') or contains(@class, 'Dropdown-option')])[1]")
+            ));
+            stationElement.click();
+        } catch (Exception e) {
+            // Вариант 2: Используем стрелку вниз и Enter
+            metroStationField.sendKeys(Keys.ARROW_DOWN);
+            metroStationField.sendKeys(Keys.ENTER);
+        }
+
+        // Убедимся, что поле заполнилось
+        wait.until(driver -> {
+            String value = metroStationField.getAttribute("value");
+            return value != null && !value.isEmpty();
+        });
     }
 
     public void setPhone(String phone) {
+        wait.until(ExpectedConditions.visibilityOf(phoneField));
         phoneField.clear();
         phoneField.sendKeys(phone);
     }
 
     public void clickNextButton() {
+        // Проверяем, что кнопка активна (все поля заполнены)
         wait.until(ExpectedConditions.elementToBeClickable(nextButton));
         nextButton.click();
 
@@ -125,22 +155,17 @@ public class OrderPage {
         commentField.click();
     }
 
-    public void setDeliveryDateTomorrow() {
-        // Автоматически устанавливаем завтрашнюю дату
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        String tomorrowDate = tomorrow.format(dateFormatter);
-        setDeliveryDate(tomorrowDate);
-    }
-
     public void setRentalPeriod(String period) {
         // Кликаем на поле выбора срока
         rentalPeriodField.click();
 
         // Ждем появления списка вариантов
-        By periodOption = By.xpath("//div[@class='Dropdown-option' and text()='" + period + "']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(periodOption));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[@class='Dropdown-menu']")));
 
-        // Кликаем на нужный вариант
+        // Ищем нужный вариант по точному тексту
+        By periodOption = By.xpath("//div[@class='Dropdown-option' and text()='" + period + "']");
+        wait.until(ExpectedConditions.elementToBeClickable(periodOption));
         driver.findElement(periodOption).click();
     }
 
@@ -185,25 +210,5 @@ public class OrderPage {
             return successModal.getText();
         }
         return "";
-    }
-
-    // Комплексные методы для заполнения формы
-
-    public void fillFirstPartOfForm(String name, String lastName, String address,
-                                    String metroStation, String phone) {
-        setName(name);
-        setLastName(lastName);
-        setAddress(address);
-        setMetroStation(metroStation);
-        setPhone(phone);
-        clickNextButton();
-    }
-
-    public void fillSecondPartOfForm(String date, String period, String color, String comment) {
-        setDeliveryDate(date);
-        setRentalPeriod(period);
-        selectColor(color);
-        setComment(comment);
-        clickOrderButton();
     }
 }

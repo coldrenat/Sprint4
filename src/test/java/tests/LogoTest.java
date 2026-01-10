@@ -85,7 +85,7 @@ public class LogoTest extends BaseTest {
         // Вводим неверный номер заказа
         mainPage.setOrderNumber("1234567890");
         mainPage.clickGoButton();
-
+//
         // Ждем загрузки страницы статуса заказа
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.urlContains("track"));
