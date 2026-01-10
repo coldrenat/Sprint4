@@ -19,7 +19,7 @@ public class OrderPage {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     // Первая часть формы
-
+//
     @FindBy(xpath = "//input[@placeholder='* Имя']")
     private WebElement nameField;
 

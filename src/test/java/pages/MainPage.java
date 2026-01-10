@@ -133,7 +133,7 @@ public class MainPage {
             // Если кнопка куки не появилась, продолжаем
         }
     }
-
+    //
     public int getFaqQuestionsCount() {
         return faqQuestions.size();
     }

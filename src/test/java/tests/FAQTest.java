@@ -16,7 +16,7 @@ public class FAQTest extends BaseTest {
         this.questionIndex = questionIndex;
         this.expectedAnswerText = expectedAnswerText;
     }
-
+//
     @Parameterized.Parameters(name = "FAQ #{0}: проверка ответа")
     public static Object[][] getTestData() {
         return new Object[][] {
