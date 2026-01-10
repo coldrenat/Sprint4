@@ -1,5 +1,7 @@
 package pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -7,89 +9,73 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class OrderPage {
 
     private final WebDriver driver;
+    private final WebDriverWait wait;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    // Локаторы для формы заказа
-
-    // Поле "Имя"
+    // Первая часть формы
+//
     @FindBy(xpath = "//input[@placeholder='* Имя']")
     private WebElement nameField;
 
-    // Поле "Фамилия"
     @FindBy(xpath = "//input[@placeholder='* Фамилия']")
     private WebElement lastNameField;
 
-    // Поле "Адрес"
     @FindBy(xpath = "//input[@placeholder='* Адрес: куда привезти заказ']")
     private WebElement addressField;
 
-    // Поле "Станция метро"
     @FindBy(xpath = "//input[@placeholder='* Станция метро']")
     private WebElement metroStationField;
 
-    // Список станций метро
-    @FindBy(xpath = "//div[@class='Order_Text__2broi']")
-    private WebElement metroStationOption;
-
-    // Поле "Телефон"
     @FindBy(xpath = "//input[@placeholder='* Телефон: на него позвонит курьер']")
     private WebElement phoneField;
 
-    // Кнопка "Далее"
     @FindBy(xpath = "//button[text()='Далее']")
     private WebElement nextButton;
 
-    // Поле "Когда привезти самокат"
+    // Вторая часть формы
+
     @FindBy(xpath = "//input[@placeholder='* Когда привезти самокат']")
     private WebElement deliveryDateField;
 
-    // Календарь (выбор даты)
-    @FindBy(xpath = "//div[contains(@class, 'react-datepicker__day--selected')]")
-    private WebElement datePickerSelected;
-
-    // Срок аренды
     @FindBy(xpath = "//div[@class='Dropdown-placeholder']")
     private WebElement rentalPeriodField;
 
-    // Опции срока аренды
-    @FindBy(xpath = "//div[@class='Dropdown-option' and text()='сутки']")
-    private WebElement rentalPeriodOption;
+    @FindBy(xpath = "//label[@for='black']")
+    private WebElement blackColorCheckbox;
 
-    // Чекбокс "Черный жемчуг"
-    @FindBy(xpath = "//input[@id='black']")
-    private WebElement blackPearlCheckbox;
+    @FindBy(xpath = "//label[@for='grey']")
+    private WebElement greyColorCheckbox;
 
-    // Чекбокс "Серая безысходность"
-    @FindBy(xpath = "//input[@id='grey']")
-    private WebElement greyHopelessnessCheckbox;
-
-    // Поле "Комментарий для курьера"
     @FindBy(xpath = "//input[@placeholder='Комментарий для курьера']")
     private WebElement commentField;
 
-    // Кнопка "Заказать"
-    @FindBy(xpath = "//button[@class='Button_Button__ra12g Button_Middle__1CSJM' and text()='Заказать']")
+    @FindBy(xpath = "//button[text()='Заказать' and @class='Button_Button__ra12g Button_Middle__1CSJM']")
     private WebElement orderButton;
 
-    // Кнопка "Да" в модальном окне подтверждения
+    // Модальное окно подтверждения
+
     @FindBy(xpath = "//button[text()='Да']")
     private WebElement confirmYesButton;
 
-    // Модальное окно с сообщением об успешном заказе
-    @FindBy(xpath = "//div[contains(@class, 'Order_ModalHeader__3FDaJ')]")
+    @FindBy(xpath = "//div[contains(@class, 'Order_ModalHeader__')]")
     private WebElement successModal;
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15)); // Увеличили время ожидания
         PageFactory.initElements(driver, this);
     }
 
-    // Методы для заполнения формы
+    // Методы для первой части формы
 
     public void setName(String name) {
+        wait.until(ExpectedConditions.visibilityOf(nameField));
         nameField.clear();
         nameField.sendKeys(name);
     }
@@ -105,41 +91,91 @@ public class OrderPage {
     }
 
     public void setMetroStation(String station) {
-        metroStationField.clear();
+        // Ждем пока поле станет кликабельным
+        wait.until(ExpectedConditions.elementToBeClickable(metroStationField));
+
+        // Кликаем на поле
+        metroStationField.click();
+
+        // Вводим название станции посимвольно (иногда помогает)
         metroStationField.sendKeys(station);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.elementToBeClickable(metroStationOption));
-        metroStationOption.click();
+
+        // Ждем появления выпадающего списка
+        // Используем более надежный локатор для выпадающего списка
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//div[contains(@class, 'select-search__select') or contains(@class, 'select-search__options')]")));
+
+        // Теперь выбираем станцию из выпадающего списка
+        // В большинстве реализаций это кнопка или div с классом содержащим 'option'
+        // Попробуем кликнуть на элемент списка станций метро
+
+        // Вариант 1: Клик по первому элементу в списке (обычно это искомая станция)
+        try {
+            WebElement stationElement = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("(//div[contains(@class, 'select-search__option') or contains(@class, 'Dropdown-option')])[1]")
+            ));
+            stationElement.click();
+        } catch (Exception e) {
+            // Вариант 2: Используем стрелку вниз и Enter
+            metroStationField.sendKeys(Keys.ARROW_DOWN);
+            metroStationField.sendKeys(Keys.ENTER);
+        }
+
+        // Убедимся, что поле заполнилось
+        wait.until(driver -> {
+            String value = metroStationField.getAttribute("value");
+            return value != null && !value.isEmpty();
+        });
     }
 
     public void setPhone(String phone) {
+        wait.until(ExpectedConditions.visibilityOf(phoneField));
         phoneField.clear();
         phoneField.sendKeys(phone);
     }
 
     public void clickNextButton() {
+        // Проверяем, что кнопка активна (все поля заполнены)
+        wait.until(ExpectedConditions.elementToBeClickable(nextButton));
         nextButton.click();
+
+        // Ждем загрузки второй части формы
+        wait.until(ExpectedConditions.visibilityOf(deliveryDateField));
     }
 
+    // Методы для второй части формы
+
     public void setDeliveryDate(String date) {
+        // Очищаем поле и вводим дату
         deliveryDateField.clear();
         deliveryDateField.sendKeys(date);
-        // Закрываем календарь кликом по другому элементу
-        nameField.click();
+        deliveryDateField.sendKeys(Keys.ENTER);
+
+        // Кликаем вне поля, чтобы закрыть календарь
+        commentField.click();
     }
 
     public void setRentalPeriod(String period) {
+        // Кликаем на поле выбора срока
         rentalPeriodField.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.elementToBeClickable(rentalPeriodOption));
-        rentalPeriodOption.click();
+
+        // Ждем появления списка вариантов
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[@class='Dropdown-menu']")));
+
+        // Ищем нужный вариант по точному тексту
+        By periodOption = By.xpath("//div[@class='Dropdown-option' and text()='" + period + "']");
+        wait.until(ExpectedConditions.elementToBeClickable(periodOption));
+        driver.findElement(periodOption).click();
     }
 
     public void selectColor(String color) {
         if ("black".equalsIgnoreCase(color)) {
-            blackPearlCheckbox.click();
+            wait.until(ExpectedConditions.elementToBeClickable(blackColorCheckbox));
+            blackColorCheckbox.click();
         } else if ("grey".equalsIgnoreCase(color)) {
-            greyHopelessnessCheckbox.click();
+            wait.until(ExpectedConditions.elementToBeClickable(greyColorCheckbox));
+            greyColorCheckbox.click();
         }
     }
 
@@ -149,18 +185,19 @@ public class OrderPage {
     }
 
     public void clickOrderButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(orderButton));
         orderButton.click();
     }
 
+    // Методы для модального окна
+
     public void clickConfirmYesButton() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.elementToBeClickable(confirmYesButton));
         confirmYesButton.click();
     }
 
     public boolean isSuccessModalDisplayed() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOf(successModal));
             return successModal.isDisplayed();
         } catch (Exception e) {
@@ -173,24 +210,5 @@ public class OrderPage {
             return successModal.getText();
         }
         return "";
-    }
-
-    // Комплексный метод для заполнения первой части формы
-    public void fillFirstPartOfForm(String name, String lastName, String address, String metroStation, String phone) {
-        setName(name);
-        setLastName(lastName);
-        setAddress(address);
-        setMetroStation(metroStation);
-        setPhone(phone);
-        clickNextButton();
-    }
-
-    // Комплексный метод для заполнения второй части формы
-    public void fillSecondPartOfForm(String date, String period, String color, String comment) {
-        setDeliveryDate(date);
-        setRentalPeriod(period);
-        selectColor(color);
-        setComment(comment);
-        clickOrderButton();
     }
 }

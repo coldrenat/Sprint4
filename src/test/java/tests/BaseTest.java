@@ -14,7 +14,7 @@ public class BaseTest {
     @Before
     public void setUp() {
         WebDriverManager.chromedriver().setup();
-
+//
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
@@ -23,6 +23,7 @@ public class BaseTest {
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
         driver.get("https://qa-scooter.praktikum-services.ru/");
     }
 
