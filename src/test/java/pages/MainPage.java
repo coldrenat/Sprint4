@@ -1,6 +1,5 @@
 package pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -72,8 +71,16 @@ public class MainPage {
     }
 
     public void clickYandexLogo() {
+        // Запоминаем текущее окно
+        String originalWindow = driver.getWindowHandle();
+        int originalWindowCount = driver.getWindowHandles().size();
+
+        // Кликаем на логотип Яндекс
         wait.until(ExpectedConditions.elementToBeClickable(yandexLogo));
         yandexLogo.click();
+
+        // Ждем открытия новой вкладки
+        wait.until(ExpectedConditions.numberOfWindowsToBe(originalWindowCount + 1));
     }
 
     public void clickScooterLogo() {
@@ -133,8 +140,28 @@ public class MainPage {
             // Если кнопка куки не появилась, продолжаем
         }
     }
-    //
+
     public int getFaqQuestionsCount() {
         return faqQuestions.size();
+    }
+
+    // Метод для переключения на новую вкладку
+    public void switchToNewWindow(String originalWindow) {
+        // Ждем пока появится новая вкладка
+        wait.until(driver -> driver.getWindowHandles().size() > 1);
+
+        // Переключаемся на новую вкладку
+        for (String windowHandle : driver.getWindowHandles()) {
+            if (!originalWindow.equals(windowHandle)) {
+                driver.switchTo().window(windowHandle);
+                break;
+            }
+        }
+    }
+
+    // Метод для закрытия текущей вкладки и возврата к оригинальной
+    public void closeCurrentWindowAndSwitchBack(String originalWindow) {
+        driver.close();
+        driver.switchTo().window(originalWindow);
     }
 }
